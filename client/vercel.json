@@ -1,5 +1,23 @@
 {
+  "version": 2,
+  "cleanUrls": true,
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/admin", "destination": "/admin.html" }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "client/index.html"
+    }
   ]
 }
