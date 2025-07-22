@@ -17,3 +17,10 @@ const connectDB = async () => {
   }
 };
 module.exports = connectDB;
+
+import postgres from 'postgres'
+
+const connectionString = process.env.DATABASE_URL
+const sql = postgres(connectionString)
+
+export default sql
