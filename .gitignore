@@ -14,3 +14,9 @@ dist
 # Subproject folders
 client/node_modules
 api/node_modules
+node_modules/
+dist/
+.env
+.vscode/
+.DS_Store
+.vercel/
