@@ -1,0 +1,16 @@
+# Node.js
+node_modules
+.env
+
+# Vite
+dist
+
+# VS Code settings
+.vscode
+
+# OS files
+.DS_Store
+
+# Subproject folders
+client/node_modules
+api/node_modules

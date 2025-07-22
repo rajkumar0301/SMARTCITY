@@ -8,6 +8,7 @@ const Razorpay = require('razorpay');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const { createClient } = require('@supabase/supabase-js');
 
 dotenv.config();
 const app = express();
@@ -16,13 +17,26 @@ const PORT = process.env.PORT || 3000;
 const secretKey = "smartpark7250561528"; // move to .env in real apps
 
 //  MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log(' MongoDB connected successfully'))
-.catch((err) => console.error(' MongoDB connection error:', err));
+mongoose.connect(process.env.MONGO_URI) 
+ const MONGO_URI = process.env.MONGO_URI;
 
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch((err) => console.error('MongoDB connection error:', err));
+
+
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+(async () => {
+  try {
+    const { data, error } = await supabase.from('feedback').select('*').limit(1);
+
+    if (error) throw error;
+    console.log('✅ Supabase connected successfully');
+  } catch (err) {
+    console.error('❌ Supabase connection error:', err.message);
+  }
+})();
 //  Razorpay Setup
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -56,6 +70,8 @@ app.use('/api/payment', require('./routes/payment'));
 app.use('/api/vehicles', require('./routes/vehicles'));
 app.use('/api/violations', require('./routes/Violations'));
 app.use('/api/feedback', require('./routes/feedback'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/complaints', require('./routes/complaints'));
 
 
 //  Razorpay Order Route
