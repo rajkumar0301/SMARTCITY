@@ -13,11 +13,6 @@
     { "source": "/login", "destination": "/login.html" },
     { "source": "/register", "destination": "/register.html" },
     { "source": "/admin", "destination": "/admin.html" }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "client/index.html"
-    }
   ]
+  
 }
