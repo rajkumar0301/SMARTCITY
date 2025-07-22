@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Public Incident</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #1565c0;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .submit-btn {
+      background-color: #1976d2;
+      color: white;
+      padding: 14px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #0d47a1;
+    }
+
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 8px;
+      color: #1976d2;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">report_problem</span> Report Public Incident</h2>
+    <form id="incidentForm" action="/api/incidents" method="POST">
+      
+      <div class="form-group">
+        <label for="name"><span class="material-icons">person</span> Your Name</label>
+        <input type="text" id="name" name="name" placeholder="Your full name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="phone"><span class="material-icons">call</span> Contact Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="e.g., 9876543210" required />
+      </div>
+
+      <div class="form-group">
+        <label for="incidentType"><span class="material-icons">error</span> Type of Incident</label>
+        <select id="incidentType" name="incidentType" required>
+          <option value="">-- Select Incident Type --</option>
+          <option value="Accident">Accident</option>
+          <option value="Traffic Jam">Traffic Jam</option>
+          <option value="Road Block">Road Block</option>
+          <option value="Hazard">Hazard</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="location"><span class="material-icons">place</span> Location</label>
+        <input type="text" id="location" name="location" placeholder="Enter location or landmark" required />
+      </div>
+
+      <div class="form-group">
+        <label for="description"><span class="material-icons">description</span> Incident Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Describe the incident in detail..." required></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Incident Report</button>
+    </form>
+  </div>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Public Incident</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    form label {
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+      color: #444;
+    }
+    form input[type="text"],
+    form input[type="email"],
+    form textarea,
+    form select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    form textarea {
+      resize: vertical;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .submit-btn {
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">report</span> Report Public Incident</h2>
+    <form id="incidentForm" action="/api/report-incident" method="POST">
+      <div class="form-group">
+        <label for="fullname"><span class="material-icons">person</span> Full Name</label>
+        <input type="text" id="fullname" name="fullname" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email"><span class="material-icons">email</span> Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="incidentType"><span class="material-icons">category</span> Incident Type</label>
+        <select id="incidentType" name="incidentType" required>
+          <option value="">-- Select Incident Type --</option>
+          <option value="Road Damage">Road Damage</option>
+          <option value="Water Logging">Water Logging</option>
+          <option value="Garbage Issue">Garbage Issue</option>
+          <option value="Street Light Issue">Street Light Issue</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="location"><span class="material-icons">location_on</span> Location</label>
+        <input type="text" id="location" name="location" placeholder="Enter address or landmark" required />
+      </div>
+
+      <div class="form-group">
+        <label for="description"><span class="material-icons">description</span> Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Provide incident details..." required></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Incident</button>
+    </form>
+  </div>
+</body>
+</html> -->

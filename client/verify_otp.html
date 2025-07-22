@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify OTP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; padding: 20px; text-align: center; }
+    input { padding: 10px; margin: 10px; width: 250px; }
+    button { padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h2>Enter the OTP</h2>
+
+  <input type="text" id="otp" placeholder="Enter OTP" />
+  <br>
+  <button onclick="verifyOtp()">Verify</button>
+
+  <script>
+    async function verifyOtp() {
+      const otp = document.getElementById("otp").value;
+      const id = localStorage.getItem('otp_id');
+
+      const res = await fetch('/otp/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, otp })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('Login successful!');
+        localStorage.setItem('logged_in', true);
+        window.location.href = 'dashboard.html'; // Your protected area
+      } else {
+        alert('Invalid OTP. Try again.');
+      }
+    }
+  </script>
+</body>
+</html>

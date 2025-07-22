@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: #fff;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Feedback Dashboard</h1>
+  <table id="feedbackTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows go here -->
+    </tbody>
+  </table>
+
+  <script>
+    fetch('/api/feedback')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#feedbackTable tbody');
+        data.reverse().forEach(feedback => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${feedback.name}</td>
+            <td>${feedback.email}</td>
+            <td>${feedback.message}</td>
+            <td>${new Date(feedback.createdAt).toLocaleString()}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error('Failed to load feedbacks:', err);
+        alert('Failed to load feedbacks');
+      });
+  </script>
+</body>
+</html>

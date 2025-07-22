@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Parking Spot</title>
+  <link rel="stylesheet" href="booking.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Book Your Parking Spot</h2>
+    <form id="bookingForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+
+      <label for="vehicle">Vehicle Number</label>
+      <input type="text" id="vehicle" required />
+
+      <label for="duration">Duration (in hours)</label>
+      <select id="duration" required>
+        <option value="">Select</option>
+        <option value="1">1 Hour</option>
+        <option value="2">2 Hours</option>
+        <option value="3">3 Hours</option>
+      </select>
+
+      <label for="amount">Amount (₹)</label>
+      <input type="number" id="amount" readonly value="50" />
+
+      <button type="button" id="payNow">Pay & Book Now</button>
+    </form>
+  </div>
+
+  <!-- Razorpay Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Booking Logic -->
+  <script>
+    document.getElementById("duration").addEventListener("change", function () {
+      const hours = parseInt(this.value);
+      const pricePerHour = 50;
+      document.getElementById("amount").value = hours * pricePerHour;
+    });
+
+    document.getElementById("payNow").addEventListener("click", async function () {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const vehicle = document.getElementById("vehicle").value;
+      const duration = document.getElementById("duration").value;
+      const amount = document.getElementById("amount").value;
+
+      if (!name || !email || !vehicle || !duration) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      const res = await fetch("/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: amount * 100 }) // in paise
+      });
+
+      const data = await res.json();
+
+      const options = {
+        key: "YOUR_RAZORPAY_KEY_ID", // Replace after deploy
+        amount: data.amount,
+        currency: "INR",
+        name: "SmartPark Booking",
+        description: "Parking Payment",
+        order_id: data.id,
+        handler: function (response) {
+          alert("Payment Successful! Booking Confirmed.");
+          // Optional: Store booking in DB here
+        },
+        prefill: {
+          name,
+          email
+        },
+        theme: {
+          color: "#007bff"
+        }
+      };
+
+      const razor = new Razorpay(options);
+      razor.open();
+    });
+  </script>
+</body>
+</html>

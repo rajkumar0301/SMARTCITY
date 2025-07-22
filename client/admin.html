@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Smart City</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #2563eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --light: #f9fafb;
+      --dark: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .dashboard-container {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+
+    .card {
+      flex: 1 1 30%;
+      background: linear-gradient(to right, var(--secondary), var(--primary));
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      background-color: var(--secondary);
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 250px;
+    }
+
+    button.export-btn {
+      padding: 0.6rem 1rem;
+      background-color: var(--success);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    td button {
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 4px;
+      margin-right: 5px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background-color: var(--warning);
+    }
+
+    .delete-btn {
+      background-color: var(--danger);
+    }
+
+    @media (max-width: 768px) {
+      .card-container {
+        flex-direction: column;
+      }
+      .tabs {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Smart City Admin Panel</h1>
+  </header>
+
+  <div class="dashboard-container">
+
+    <!-- Cards -->
+    <div class="card-container">
+      <div class="card">
+        <h3>Total Vehicles</h3>
+        <p id="totalVehicles">0</p>
+      </div>
+      <div class="card">
+        <h3>Total Violations</h3>
+        <p id="totalViolations">0</p>
+      </div>
+      <div class="card">
+        <h3>Total Emergencies</h3>
+        <p id="totalEmergencies">0</p>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <canvas id="chartCanvas" height="100"></canvas>
+
+    <!-- Tab Buttons -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('vehicles')">Vehicles</button>
+      <button class="tab-btn" onclick="switchTab('violations')">Violations</button>
+      <button class="tab-btn" onclick="switchTab('emergencies')">Emergencies</button>
+    </div>
+
+    <!-- Vehicle Table -->
+    <div class="tab-content active" id="vehicles">
+      <div class="table-controls">
+        <input type="text" id="searchVehicle" placeholder="Search vehicles...">
+        <button class="export-btn" onclick="exportCSV('vehicleTable')">Export CSV</button>
+      </div>
+      <div class="table-container">
+        <table id="vehicleTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Owner</th>
+              <th>Plate</th>
+              <th>Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Violation Table -->
+    <div class="tab-content" id="violations">
+      <div class="table-controls">
+        <input type="text" id="searchViolation" placeholder="Search violations...">
+        <button class="export-btn" onclick="exportCSV('violationTable')">Export CSV</button>
+      </div>
+      <div class="table-container">
+        <table id="violationTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vehicle No</th>
+              <th>Violation</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Emergency Table -->
+    <div class="tab-content" id="emergencies">
+      <div class="table-controls">
+        <input type="text" id="searchEmergency" placeholder="Search emergencies...">
+        <button class="export-btn" onclick="exportCSV('emergencyTable')">Export CSV</button>
+      </div>
+      <div class="table-container">
+        <table id="emergencyTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Location</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Dummy Data
+    const Vehicles = [
+      { id: 1, owner: "Raj", plate: "MH12AB1234", type: "Car" },
+      { id: 2, owner: "Amit", plate: "DL09XY5678", type: "Bike" },
+    ];
+
+    const violations = [
+      { id: 1, vehicle: "MH12AB1234", violation: "Signal Jump", date: "2024-06-01" },
+      { id: 2, vehicle: "DL09XY5678", violation: "Overspeed", date: "2024-06-02" },
+    ];
+
+    const emergencies = [
+      { id: 1, location: "MG Road", type: "Accident", status: "Pending" },
+      { id: 2, location: "Nehru Chowk", type: "Fire", status: "Resolved" },
+    ];
+
+    // Counts
+    document.getElementById('totalVehicles').innerText = vehicles.length;
+    document.getElementById('totalViolations').innerText = violations.length;
+    document.getElementById('totalEmergencies').innerText = emergencies.length;
+
+    // Chart.js
+    const ctx = document.getElementById('chartCanvas');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Vehicles', 'Violations', 'Emergencies'],
+        datasets: [{
+          label: 'City Reports',
+          data: [vehicles.length, violations.length, emergencies.length],
+          backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    // Table Functions
+    function populateTable(data, tableId) {
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      tbody.innerHTML = '';
+      data.forEach((item) => {
+        let row = '<tr>';
+        for (let key in item) {
+          row += `<td>${item[key]}</td>`;
+        }
+        row += `<td>
+                  <button class="edit-btn">Edit</button>
+                  <button class="delete-btn">Delete</button>
+                </td>`;
+        row += '</tr>';
+        tbody.innerHTML += row;
+      });
+    }
+
+    populateTable(vehicles, 'vehicleTable');
+    populateTable(violations, 'violationTable');
+    populateTable(emergencies, 'emergencyTable');
+
+    // Search Filter
+    ['searchVehicle', 'searchViolation', 'searchEmergency'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function() {
+        const table = document.querySelector(`#${id.replace('search', '').toLowerCase()}Table tbody`);
+        const filter = this.value.toLowerCase();
+        Array.from(table.rows).forEach(row => {
+          row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
+        });
+      });
+    });
+
+    // CSV Export
+    function exportCSV(tableId) {
+      const table = document.getElementById(tableId);
+      let csv = '';
+      for (let row of table.rows) {
+        let rowData = Array.from(row.cells).map(cell => cell.innerText);
+        csv += rowData.join(",") + "\n";
+      }
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${tableId}.csv`;
+      a.click();
+    }
+
+    // Tab Switch
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+      document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+  </script>
+  <script>
+async function loadDashboard() {
+  const [vehicles, violations, emergencies] = await Promise.all([
+    fetch("http://localhost:5000/api/vehicles").then(res => res.json()),
+    fetch("http://localhost:5000/api/violations").then(res => res.json()),
+    fetch("http://localhost:5000/api/emergencies").then(res => res.json()),
+  ]);
+
+  document.getElementById("totalVehicles").innerText = vehicles.length;
+  document.getElementById("totalViolations").innerText = violations.length;
+  document.getElementById("totalEmergencies").innerText = emergencies.length;
+
+  // Populate vehicle table
+  const tableBody = document.querySelector("#vehicleTable tbody");
+  tableBody.innerHTML = ""; // clear existing
+  vehicles.forEach((v, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${v.owner}</td>
+      <td>${v.plate}</td>
+      <td>${v.type}</td>
+      <td>
+        <button onclick="editVehicle('${v._id}')">Edit</button>
+        <button onclick="deleteVehicle('${v._id}')">Delete</button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+loadDashboard();
+
+async function deleteVehicle(id) {
+  if (confirm("Are you sure?")) {
+    await fetch(`http://localhost:5000/api/vehicles/${id}`, { method: "DELETE" });
+    loadDashboard();
+  }
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart City Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+      color: #333;
+    }
+
+    header {
+      background: #1e3a8a;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card {
+      flex: 1 1 200px;
+      padding: 1.2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-left: 8px solid #3b82f6;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      margin: 0 0 0.5rem;
+    }
+
+    .section-title {
+      margin: 2rem 0 1rem;
+      font-size: 1.5rem;
+      color: #1e3a8a;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .tabs button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: #1e3a8a;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 0.8rem;
+      border: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    input[type="text"] {
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 250px;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background: #10b981;
+      color: white;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #059669;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .card-container {
+        flex-direction: column;
+      }
+
+      .table-controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Smart City Admin Panel</h1>
+  </header>
+
+  <div class="dashboard-container">
+
+    -- Cards --
+    <div class="card-container">
+      <div class="card" style="border-left-color:#3b82f6">
+        <h3>Total Vehicles</h3>
+        <p id="totalVehicles">0</p>
+      </div>
+      <div class="card" style="border-left-color:#ef4444">
+        <h3>Total Violations</h3>
+        <p id="totalViolations">0</p>
+      </div>
+      <div class="card" style="border-left-color:#f59e0b">
+        <h3>Total Emergencies</h3>
+        <p id="totalEmergencies">0</p>
+      </div>
+    </div>
+
+     Chart --
+         <canvas id="reportChart" height="100"></canvas>
+
+    -- Tabs --
+    <h2 class="section-title">Manage Records</h2>
+    <div class="tabs">
+      <button onclick="switchTab('vehicles')" class="active">Vehicles</button>
+      <button onclick="switchTab('violations')">Violations</button>
+      <button onclick="switchTab('emergencies')">Emergencies</button>
+    </div>
+
+    -- Table Controls --
+    <div class="table-controls">
+      <input type="text" id="searchInput" placeholder="Search..." oninput="filterTable()" />
+      <button onclick="exportToCSV()">Download CSV</button>
+    </div>
+
+    -- Table Container --
+    <div class="table-container">
+      <table id="dataTable">
+        <thead>
+          <tr id="tableHead"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    const tabs = {
+      vehicles: {
+        data: [
+          { id: 1, owner: "Raj", plate: "MH12AB1234", type: "Car" },
+          { id: 2, owner: "Amit", plate: "DL09XY5678", type: "Bike" }
+        ],
+        headers: ["ID", "Owner", "Plate", "Type"]
+      },
+      violations: {
+        data: [
+          { id: 1, plate: "MH12AB1234", type: "Signal Jump", fine: "₹500" },
+          { id: 2, plate: "DL09XY5678", type: "Overspeed", fine: "₹300" }
+        ],
+        headers: ["ID", "Plate", "Type", "Fine"]
+      },
+      emergencies: {
+        data: [
+          { id: 1, type: "Accident", location: "MG Road", status: "Pending" },
+          { id: 2, type: "Fire", location: "City Mall", status: "Resolved" }
+        ],
+        headers: ["ID", "Type", "Location", "Status"]
+      }
+    };
+
+    let currentTab = 'vehicles';
+
+    function renderTable(tabName) {
+      currentTab = tabName;
+      const tableHead = document.getElementById("tableHead");
+      const tableBody = document.getElementById("tableBody");
+
+      // Update header
+      tableHead.innerHTML = tabs[tabName].headers.map(h => `<th>${h}</th>`).join("") + "<th>Actions</th>";
+
+      // Update rows
+      tableBody.innerHTML = "";
+      tabs[tabName].data.forEach(row => {
+        let rowHTML = "<tr>";
+        for (const key of Object.keys(row)) {
+          rowHTML += `<td>${row[key]}</td>`;
+        }
+        rowHTML += `<td><button onclick="editRow(${row.id})">Edit</button></td>`;
+        rowHTML += "</tr>";
+        tableBody.innerHTML += rowHTML;
+      });
+
+      // Update analytics counts
+      document.getElementById("totalVehicles").textContent = tabs.vehicles.data.length;
+      document.getElementById("totalViolations").textContent = tabs.violations.data.length;
+      document.getElementById("totalEmergencies").textContent = tabs.emergencies.data.length;
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+      renderTable(tab);
+      document.getElementById("searchInput").value = "";
+    }
+
+    function filterTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#tableBody tr");
+      rows.forEach(row => {
+        const show = row.innerText.toLowerCase().includes(input);
+        row.style.display = show ? "" : "none";
+      });
+    }
+
+    function exportToCSV() {
+      const table = document.getElementById("dataTable");
+      let csv = "";
+      for (let row of table.rows) {
+        let rowData = [];
+        for (let cell of row.cells) {
+          rowData.push(cell.innerText);
+        }
+        csv += rowData.join(",") + "\n";
+      }
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${currentTab}.csv`;
+      a.click();
+    }
+
+    function editRow(id) {
+      alert(`Edit row with ID: ${id} in ${currentTab}`);
+    }
+
+    // Initial load
+    renderTable(currentTab);
+
+    // Chart.js
+    const ctx = document.getElementById('reportChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Vehicles', 'Violations', 'Emergencies'],
+        datasets: [{
+          label: 'Records Count',
+          data: [
+            tabs.vehicles.data.length,
+            tabs.violations.data.length,
+            tabs.emergencies.data.length
+          ],
+          backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b'],
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart City Admin Panel</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Smart City Admin Dashboard</h1>
+    <div class="card-container">
+      <div class="card">Total Vehicles: <span id="totalVehicles">0</span></div>
+      <div class="card">Total Violations: <span id="totalViolations">0</span></div>
+      <div class="card">Total Emergencies: <span id="totalEmergencies">0</span></div>
+    </div>
+    <canvas id="dashboardChart"></canvas>
+    <div class="tabs">
+      <button onclick="switchTab('vehicles')">Vehicles</button>
+      <button onclick="switchTab('violations')">Violations</button>
+      <button onclick="switchTab('emergencies')">Emergencies</button>
+    </div>
+    <div id="vehicles" class="tab-content active">
+      <input type="text" id="searchVehicles" placeholder="Search Vehicles..." onkeyup="filterTable('vehicleTable', this.value)" />
+      <button onclick="exportTableToCSV('vehicleTable','vehicles.csv')">Download CSV</button>
+      <table id="vehicleTable"></table>
+    </div>
+    <div id="violations" class="tab-content">
+      <input type="text" id="searchViolations" placeholder="Search Violations..." onkeyup="filterTable('violationTable', this.value)" />
+      <button onclick="exportTableToCSV('violationTable','violations.csv')">Download CSV</button>
+      <table id="violationTable"></table>
+    </div>
+    <div id="emergencies" class="tab-content">
+      <input type="text" id="searchEmergencies" placeholder="Search Emergencies..." onkeyup="filterTable('emergencyTable', this.value)" />
+      <button onclick="exportTableToCSV('emergencyTable','emergencies.csv')">Download CSV</button>
+      <table id="emergencyTable"></table>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Smart City</title>
+  <link rel="stylesheet" href="styles/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Smart City Admin Dashboard</h1>
+  </header>
+
+  <nav>
+    <button onclick="switchTab('vehicles')">Vehicles</button>
+    <button onclick="switchTab('violations')">Violations</button>
+    <button onclick="switchTab('emergencies')">Emergencies</button>
+  </nav>
+
+  <main>
+    <section id="vehicles" class="tab">
+      <h2>Vehicles</h2>
+      <input type="text" placeholder="Search vehicle..." onkeyup="filterTable('vehiclesTable', this.value)">
+      <button onclick="exportCSV('vehiclesTable')">Export CSV</button>
+      <table id="vehiclesTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Number</th>
+            <th>Owner</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="violations" class="tab hidden">
+      <h2>Violations</h2>
+      <input type="text" placeholder="Search violation..." onkeyup="filterTable('violationsTable', this.value)">
+      <button onclick="exportCSV('violationsTable')">Export CSV</button>
+      <table id="violationsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Vehicle No.</th>
+            <th>Violation</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="emergencies" class="tab hidden">
+      <h2>Emergencies</h2>
+      <input type="text" placeholder="Search emergency..." onkeyup="filterTable('emergenciesTable', this.value)">
+      <button onclick="exportCSV('emergenciesTable')">Export CSV</button>
+      <table id="emergenciesTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <section id="charts">
+    <h2>City Traffic Analytics</h2>
+    <canvas id="trafficChart"></canvas>
+  </section>
+
+  <script src="scripts/admin.js"></script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Smart City</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Responsive layout + table styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f7f7f7;
+    }
+    header {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .dashboard-container {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .card {
+      flex: 1 1 200px;
+      background-color: #fff;
+      border-left: 5px solid #1e3a8a;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .section-title {
+      font-size: 1.4rem;
+      margin-top: 2rem;
+      color: #1e3a8a;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      background-color: #1e3a8a;
+      color: white;
+    }
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 200px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3b5fc4;
+    }
+    @media (max-width: 768px) {
+      .card-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Smart City Admin Panel</h1>
+  </header>
+
+  <div class="dashboard-container">
+
+    <! Analytics Cards --
+    <div class="card-container">
+      <div class="card">
+        <h3>Total Vehicles</h3>
+        <p id="totalVehicles">Loading...</p>
+      </div>
+      <div class="card">
+        <h3>Total Violations</h3>
+        <p id="totalViolations">Loading...</p>
+      </div>
+      <div class="card">
+        <h3>Total Emergencies</h3>
+        <p id="totalEmergencies">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Chart --
+    <canvas id="reportChart" height="100"></canvas>
+
+    <!-- Table Section --
+    <h2 class="section-title">All Vehicles</h2>
+    <div class="table-controls">
+      <input type="text" id="vehicleSearch" placeholder="Search vehicles..." />
+      <button onclick="exportToCSV('vehicleTable')">Export CSV</button>
+    </div>
+    <div class="table-container">
+      <div class="tab-container">
+  <button class="tab-btn" onclick="showTab('vehicles')">Vehicles</button>
+  <button class="tab-btn" onclick="showTab('violations')">Violations</button>
+  <button class="tab-btn" onclick="showTab('emergencies')">Emergencies</button>
+</div>
+
+<div id="vehicles" class="tab-content">
+  <!-- Vehicles table + edit form --
+</div>
+<div id="violations" class="tab-content" style="display:none;">
+  <!-- Violations table + edit form --
+</div>
+<div id="emergencies" class="tab-content" style="display:none;">
+  <!-- Emergencies table + edit form --
+</div>
+
+      <table id="vehicleTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Owner</th>
+            <th>Plate</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Populated by JS --
+        </tbody>
+      </table>
+    </div>
+
+    <!-- More tables can be copied like above for Violations & Emergencies --
+
+  </div>
+
+  <script>
+    // Dummy Data (connect with fetch from backend in production)
+    const vehicles = [
+      { id: 1, owner: "Raj", plate: "MH12AB1234", type: "Car" },
+      { id: 2, owner: "Amit", plate: "DL09XY5678", type: "Bike" },
+    ];
+
+    // Load total counts
+    document.getElementById('totalVehicles').innerText = vehicles.length;
+    document.getElementById('totalViolations').innerText = 12;
+    document.getElementById('totalEmergencies').innerText = 5;
+
+    // Populate table
+    const tableBody = document.querySelector("#vehicleTable tbody");
+    vehicles.forEach(v => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${v.id}</td>
+        <td>${v.owner}</td>
+        <td>${v.plate}</td>
+        <td>${v.type}</td>
+        <td>
+          <button>Edit</button>
+          <button>Delete</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    // Filter/Search
+    document.getElementById("vehicleSearch").addEventListener("input", function() {
+      const filter = this.value.toLowerCase();
+      const rows = document.querySelectorAll("#vehicleTable tbody tr");
+      rows.forEach(row => {
+        const match = row.innerText.toLowerCase().includes(filter);
+        row.style.display = match ? "" : "none";
+      });
+    });
+
+    // CSV Export
+    function exportToCSV(tableId) {
+      const table = document.getElementById(tableId);
+      let csv = "";
+      for (let row of table.rows) {
+        let rowData = [];
+        for (let cell of row.cells) {
+          rowData.push(cell.innerText);
+        }
+        csv += rowData.join(",") + "\n";
+      }
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${tableId}.csv`;
+      a.click();
+    }
+
+    // Chart.js
+    const ctx = document.getElementById('reportChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Vehicles', 'Violations', 'Emergencies'],
+        datasets: [{
+          label: 'City Metrics',
+          data: [vehicles.length, 12, 5],
+          backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b'],
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
+  <script src="admin.js"></script>
+</body>
+</html> -->
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart City Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .sidebar {
+      height: 100vh;
+      background-color: #343a40;
+      color: white;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px 15px;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+    .content {
+      padding: 20px;
+    }
+    .card {
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2 sidebar">
+      <h4 class="text-center my-3">Admin Panel</h4>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#vehicles">Vehicle Management</a>
+      <a href="#violations">Violation Logs</a>
+      <a href="#emergency">Emergency Services</a>
+      <a href="#otp">OTP Verification</a>
+      <a href="#bookings">Booking History</a>
+      <a href="#payments">Payment Reports</a>
+      <a href="#admins">Manage Admins</a>
+      <a href="#logs">System Logs</a>
+      <a href="#logout">Logout</a>
+    </div>
+    <div class="col-md-10 content">
+      <section id="dashboard">
+        <h3>Dashboard Overview</h3>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="card bg-primary text-white text-center p-3">
+              <h5>Total Vehicles</h5>
+              <p>245</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-danger text-white text-center p-3">
+              <h5>Violations</h5>
+              <p>37</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-warning text-white text-center p-3">
+              <h5>Emergencies</h5>
+              <p>12</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-success text-white text-center p-3">
+              <h5>Bookings</h5>
+              <p>89</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr>
+
+      <section id="vehicles">
+        <h4>Vehicle Management</h4>
+        <button class="btn btn-sm btn-primary my-2">Download CSV</button>
+        <table class="table table-bordered">
+          <thead><tr><th>ID</th><th>Owner</th><th>Plate</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Raj</td><td>WB 24 AB 1234</td><td><button class="btn btn-sm btn-warning">Edit</button> <button class="btn btn-sm btn-danger">Delete</button></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="violations">
+        <h4>Violation Logs</h4>
+        <table class="table table-bordered">
+          <thead><tr><th>ID</th><th>Vehicle</th><th>Description</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>5</td><td>WB 45 CX 6789</td><td>Red Light Jump</td><td>Pending</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="emergency">
+        <h4>Emergency Requests</h4>
+        <p>No active emergencies right now.</p>
+      </section>
+
+      <section id="otp">
+        <h4>OTP Verifications</h4>
+        <ul>
+          <li>+91-7992xxxxxx — ✅ Verified</li>
+        </ul>
+      </section>
+
+      <section id="bookings">
+        <h4>Booking History</h4>
+        <table class="table table-bordered">
+          <thead><tr><th>ID</th><th>User</th><th>Time</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>10</td><td>Rohit</td><td>12:30 PM</td><td><button class="btn btn-sm btn-danger">Cancel</button></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="payments">
+        <h4>Payment Reports</h4>
+        <p>Razorpay payment summary here.</p>
+      </section>
+
+      <section id="admins">
+        <h4>Manage Admins</h4>
+        <button class="btn btn-primary btn-sm">Add New Admin</button>
+        <ul><li>admin@example.com</li></ul>
+      </section>
+
+      <section id="logs">
+        <h4>System Logs</h4>
+        <p>Last login: 5 mins ago</p>
+      </section>
+
+      <section id="logout">
+        <a href="/logout" class="btn btn-danger">Logout</a>
+      </section>
+
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+ -->
+
+
+
+
+
+
+<!-- public/admin.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - SmartPark</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f7f7f7; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    button { padding: 5px 10px; background: #f44336; color: white; border: none; cursor: pointer; }
+    h1 { color: #333; }
+  </style>
+</head>
+<body>
+  <h1>SmartPark Admin Panel</h1>
+  <table id="bookingTable">
+    <thead>
+      <tr>
+        <th>User</th><th>Vehicle</th><th>Slot</th><th>In</th><th>Out</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="admin.js"></script>
+</body>
+</html> -->

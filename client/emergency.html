@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emergency Services Request</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #c62828;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+    }
+    input[type="text"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .submit-btn {
+      background-color: #d32f2f;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background-color: #b71c1c;
+    }
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @media screen and (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">local_hospital</span> Request Emergency Services</h2>
+    <form id="emergencyForm">
+
+      <div class="form-group">
+        <label for="name"><span class="material-icons">person</span> Your Name</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="phone"><span class="material-icons">phone</span> Contact Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="e.g., 9876543210" required />
+      </div>
+
+      <div class="form-group">
+        <label for="service"><span class="material-icons">medical_services</span> Type of Emergency</label>
+        <select id="service" name="service" required>
+          <option value="">-- Select Service --</option>
+          <option value="Ambulance">Ambulance</option>
+          <option value="Fire Brigade">Fire Brigade</option>
+          <option value="Police">Police</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="location"><span class="material-icons">location_on</span> Current Location</label>
+        <input type="text" id="location" name="location" placeholder="Enter exact address or landmark" required />
+      </div>
+
+      <div class="form-group">
+        <label for="details"><span class="material-icons">notes</span> Additional Details (Optional)</label>
+        <textarea id="details" name="details" rows="4" placeholder="Add any specific details..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Emergency Request</button>
+    </form>
+  </div>
+  <script>
+  document.getElementById('emergencyForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = {
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      service: document.getElementById('service').value,
+      location: document.getElementById('location').value,
+      details: document.getElementById('details').value
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/emergency', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('✅ Emergency request submitted successfully!');
+        window.location.href = 'success.html'; // redirect after submission
+      } else {
+        alert('❌ Submission failed: ' + result.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Network or server error!');
+    }
+  });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emergency Services</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 25px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    .emergency-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      margin: 15px 0;
+      background-color: #e8f0fe;
+      border-left: 5px solid #007bff;
+      border-radius: 6px;
+    }
+    .emergency-option .material-icons {
+      font-size: 30px;
+      color: #007bff;
+    }
+    .text-info {
+      flex: 1;
+      margin-left: 15px;
+    }
+    .text-info h4 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+    .text-info p {
+      margin: 5px 0 0;
+      color: #666;
+    }
+    .call-btn {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .call-btn:hover {
+      background-color: #0056b3;
+    }
+    @media (max-width: 600px) {
+      .emergency-option {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .call-btn {
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">emergency</span> Emergency Services</h2>
+
+    <div class="emergency-option">
+      <span class="material-icons">local_hospital</span>
+      <div class="text-info">
+        <h4>Medical Emergency</h4>
+        <p>Call ambulance or contact nearest hospital for help.</p>
+      </div>
+      <a href="tel:108" class="call-btn">Call 108</a>
+    </div>
+
+    <div class="emergency-option">
+      <span class="material-icons">local_police</span>
+      <div class="text-info">
+        <h4>Police Emergency</h4>
+        <p>Report crimes, thefts or any law violation.</p>
+      </div>
+      <a href="tel:100" class="call-btn">Call 100</a>
+    </div>
+
+    <div class="emergency-option">
+      <span class="material-icons">local_fire_department</span>
+      <div class="text-info">
+        <h4>Fire Emergency</h4>
+        <p>Report fire accidents immediately to fire department.</p>
+      </div>
+      <a href="tel:101" class="call-btn">Call 101</a>
+    </div>
+
+    <div class="emergency-option">
+      <span class="material-icons">support_agent</span>
+      <div class="text-info">
+        <h4>City Helpline</h4>
+        <p>General support or queries about Smart City services.</p>
+      </div>
+      <a href="tel:1800123456" class="call-btn">Call Helpline</a>
+    </div>
+  </div>
+</body>
+</html> -->

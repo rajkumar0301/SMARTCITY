@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OTP Register</title>
+</head>
+<body>
+  <h2>Register via OTP</h2>
+  <form id="otpForm">
+    <label>Mobile:</label>
+    <input type="text" id="mobile" placeholder="Enter mobile" required />
+    <button type="submit">Send OTP</button>
+  </form>
+
+  <div id="otpSection" style="display:none;">
+    <label>Enter OTP:</label>
+    <input type="text" id="otp" />
+    <button onclick="verifyOTP()">Verify</button>
+  </div>
+
+  <script>
+    document.getElementById("otpForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const mobile = document.getElementById("mobile").value;
+      const res = await fetch('/send-otp', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("OTP sent!");
+        document.getElementById("otpSection").style.display = "block";
+      } else {
+        alert("Failed to send OTP");
+      }
+    });
+
+    async function verifyOTP() {
+      const mobile = document.getElementById("mobile").value;
+      const otp = document.getElementById("otp").value;
+      const res = await fetch('/verify-otp', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, otp })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("OTP Verified!");
+        window.location.href = "/dashboard.html";
+      } else {
+        alert("Invalid OTP");
+      }
+    }
+  </script>
+</body>
+</html>

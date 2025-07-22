@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Traffic Violation</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+    }
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .submit-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background-color: #218838;
+    }
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @media screen and (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">gavel</span> Report Traffic Violation</h2>
+    <form id="violationForm" action="/api/violation" method="POST">
+      <div class="form-group">
+        <label for="reporter"><span class="material-icons">person</span> Your Name</label>
+        <input type="text" id="reporter" name="reporter" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email"><span class="material-icons">email</span> Your Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="vehicleNumber"><span class="material-icons">directions_car</span> Vehicle Number</label>
+        <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="e.g., MH12AB1234" required />
+      </div>
+
+      <div class="form-group">
+        <label for="violationType"><span class="material-icons">report_problem</span> Violation Type</label>
+        <select id="violationType" name="violationType" required>
+          <option value="">-- Select Violation --</option>
+          <option value="Signal Jumping">Signal Jumping</option>
+          <option value="Overspeeding">Overspeeding</option>
+          <option value="Wrong Parking">Wrong Parking</option>
+          <option value="No Helmet/Seatbelt">No Helmet / Seatbelt</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="location"><span class="material-icons">location_on</span> Violation Location</label>
+        <input type="text" id="location" name="location" placeholder="Enter location details" required />
+      </div>
+
+      <div class="form-group">
+        <label for="description"><span class="material-icons">notes</span> Description (Optional)</label>
+        <textarea id="description" name="description" rows="4" placeholder="Add any specific details..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Violation Report</button>
+    </form>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Traffic Violation</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 6px;
+      color: #007bff;
+    }
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">report_problem</span> Report Traffic Violation</h2>
+    <form action="/api/violations" method="POST">
+      <div class="form-group">
+        <label for="vehicleNumber">Vehicle Number</label>
+        <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="e.g. MH12AB1234" required>
+      </div>
+      <div class="form-group">
+        <label for="violationType">Violation Type</label>
+        <select id="violationType" name="violationType" required>
+          <option value="">Select Violation</option>
+          <option value="No Helmet">No Helmet</option>
+          <option value="Red Light Jump">Red Light Jump</option>
+          <option value="Overspeeding">Overspeeding</option>
+          <option value="Wrong Side">Wrong Side Driving</option>
+          <option value="Mobile Usage">Using Mobile While Driving</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="location">Location of Violation</label>
+        <input type="text" id="location" name="location" placeholder="e.g. MG Road, Pune" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Additional Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Optional details about the violation..."></textarea>
+      </div>
+      <button type="submit"><span class="material-icons">send</span> Submit Report</button>
+    </form>
+  </div>
+</body>
+</html> -->
