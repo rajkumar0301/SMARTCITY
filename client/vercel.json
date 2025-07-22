@@ -1,12 +1,4 @@
 {
-  "version": 2,
-  "cleanUrls": true,
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
