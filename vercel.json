@@ -10,5 +10,9 @@
   "buildCommand": "npm install && npm run build",
   "outputDirectory": "client/dist",
   "ignoreCommand": "echo 'No ignore'",
-  "framework": "vite"
+  "framework": "vite",
+   "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
 }
