@@ -1,19 +1,19 @@
+
 {
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/register", "destination": "/register.html" },
-    { "source": "/admin", "destination": "/admin.html" },
-     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": "client/dist",
-  
-  "framework": "vite",
-   "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
-}
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
