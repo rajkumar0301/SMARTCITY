@@ -1,3 +1,5 @@
+// api/feedback.js
+
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -5,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { user_id, message } = req.body;
 
@@ -16,5 +18,5 @@ module.exports = async (req, res) => {
     return res.status(error ? 500 : 200).json({ data, error });
   }
 
-  res.status(405).send('Method Not Allowed');
-};
+  return res.status(405).send('Method Not Allowed');
+}
