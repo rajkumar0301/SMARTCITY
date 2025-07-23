@@ -6,8 +6,9 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
+const supabase = require('./supabaseClient');
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method === 'POST') {
     const { user_id, title, description, status } = req.body;
 
@@ -26,4 +27,4 @@ export default async function handler(req, res) {
   }
 
   res.status(405).send('Method Not Allowed');
-}
+};
