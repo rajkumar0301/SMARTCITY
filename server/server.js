@@ -1,3 +1,65 @@
+// require('dotenv').config();
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const path = require('path');
+// const Razorpay = require('razorpay');
+// const session = require('express-session');
+// const MongoStore = require('connect-mongo');
+// const bodyParser = require('body-parser');
+// const cors = require('cors');
+// const jwt = require('jsonwebtoken');
+// const { createClient } = require('@supabase/supabase-js');
+
+// const app = express();
+// const PORT = process.env.PORT || 3000;
+// const secretKey = "smartpark7250561528"; // move to .env
+
+// //  ✅ MongoDB
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log('✅ MongoDB connected successfully'))
+//   .catch(err => console.error('❌ MongoDB connection error:', err));
+
+// // ✅ Supabase
+// console.log("Supabase URL:", process.env.SUPABASE_URL);
+// console.log("Supabase Key:", process.env.SUPABASE_KEY ? "Loaded" : "Missing");
+
+// const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+// //Razorpay Setup
+// const razorpay = new Razorpay({
+//   key_id: process.env.RAZORPAY_KEY_ID,
+//   key_secret: process.env.RAZORPAY_KEY_SECRET
+// });
+
+
+
+// (async () => {
+//   try {
+//     const { data, error } = await supabase.from('feedback').select('*').limit(1);
+//     if (error) throw error;
+//     console.log('✅ Supabase connected successfully');
+//   } catch (err) {
+//     console.error('❌ Supabase connection error:', err.message);
+//   }
+// })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,7 +72,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
 
-dotenv.config();
+//dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 //const PORT = process.env.PORT || 5000;
@@ -24,6 +86,8 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB connected successfully'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+console.log("Supabase URL:", process.env.SUPABASE_URL);
+console.log("Supabase Key:", process.env.SUPABASE_KEY ? "Loaded" : "Missing");
 
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -107,17 +171,25 @@ function authenticateToken(req, res, next) {
 }
 
 //  Optional direct HTML routes (if needed)
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/login.html'));
-});
+// Individual HTML page routes
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../client/index.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, '../client/login.html')));
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, '../client/register.html')));
+app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, '../client/dashboard.html')));
+app.get('/feedback', (req, res) => res.sendFile(path.join(__dirname, '../client/feedback.html')));
+app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, '../client/contact.html')));
+app.get('/about', (req, res) => res.sendFile(path.join(__dirname, '../client/about.html')));
+// app.get('/login', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../client/login.html'));
+// });
 
-app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/register.html'));
-});
+// app.get('/register', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../client/register.html'));
+// });
 
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dashboard.html'));
-});
+// app.get('/dashboard', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../client/dashboard.html'));
+// });
 
 //  Fallback to index.html (for SPA)
 app.get('*', (req, res) => {
