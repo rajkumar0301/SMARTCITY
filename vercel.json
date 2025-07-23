@@ -1,16 +1,14 @@
 {
-<<<<<<< HEAD
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/register", "destination": "/register.html" },
-    { "source": "/admin", "destination": "/admin.html" }
-  ]
-=======
+    { "source": "/admin", "destination": "/admin.html" },
+     { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "buildCommand": "npm install && npm run build",
   "outputDirectory": "client/dist",
   "ignoreCommand": "echo 'No ignore'",
   "framework": "vite"
->>>>>>> a600ce3 (Added new API route and updated supabase client)
 }
