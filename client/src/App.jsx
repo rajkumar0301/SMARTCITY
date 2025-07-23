@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Register from './pages/register';
 import Login from './pages/Login';
-import Dashboard from './pages/dashboard';
+import Dashboard from "./pages/Dashboard"; // ✅ must match exact file name
+
 import ProtectedRoute from './components/ProtectedRoute';
 import FeedbackAndComplaint from './pages/FeedbackAndComplaint';
 import Home from './pages/Home';
