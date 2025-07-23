@@ -9,7 +9,7 @@
   ],
   "buildCommand": "npm install && npm run build",
   "outputDirectory": "client/dist",
-  "ignoreCommand": "echo 'No ignore'",
+  
   "framework": "vite",
    "functions": {
     "api/**/*.js": {
