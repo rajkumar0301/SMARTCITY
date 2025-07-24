@@ -89,5 +89,68 @@
       razor.open();
     });
   </script>
+  <script>
+document.getElementById('booking-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {
+    userId: document.querySelector('[name="userId"]').value,
+    vehicleNumber: document.querySelector('[name="vehicleNumber"]').value,
+    slotId: document.querySelector('[name="slotId"]').value,
+    bookingTime: document.querySelector('[name="bookingTime"]').value,
+  };
+
+  const res = await fetch('/api/booking', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    alert('Booking successful!');
+  } else {
+    alert('Error: ' + result.error);
+  }
+});
+</script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient(
+    'https://qmodnifxglafmjmowspy.supabase.co',
+    'YOUR_SUPABASE_ANON_KEY'
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    window.location.href = 'login.html';
+  } else {
+    const logoutLink = document.getElementById("logout-link");
+    if (logoutLink) {
+      logoutLink.style.display = "inline";
+      logoutLink.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      });
+    }
+
+    const loginLink = document.getElementById("login-link");
+    if (loginLink) loginLink.style.display = "none";
+
+    const headerContainer = document.querySelector("header .container");
+    if (headerContainer) {
+      const userInfo = document.createElement("span");
+      const { data: user } = await supabase.auth.getUser();
+      userInfo.textContent = `Welcome, ${user.user.email}`;
+      userInfo.style.marginLeft = "10px";
+      userInfo.style.color = "white";
+      headerContainer.appendChild(userInfo);
+    }
+  }
+</script>
+
 </body>
 </html>

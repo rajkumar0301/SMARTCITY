@@ -115,6 +115,74 @@
       <button type="submit" class="submit-btn">Submit Violation Report</button>
     </form>
   </div>
+  <script>
+    document.getElementById("violation-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+
+  const data = {
+    user_id: localStorage.getItem("user_id"),
+    vehicle_number: form.vehicle_number.value,
+    violation_type: form.violation_type.value,
+    location: form.location.value,
+    description: form.description.value,
+    evidence_url: "", // Add file upload logic if needed
+  };
+
+  const res = await fetch("/api/report-violation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    alert("Violation reported successfully!");
+    form.reset();
+  } else {
+    alert("Error: " + result.error);
+  }
+});
+
+  </script>
+  <script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient(
+    'https://qmodnifxglafmjmowspy.supabase.co',
+    'YOUR_SUPABASE_ANON_KEY'
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    window.location.href = 'login.html';
+  } else {
+    const logoutLink = document.getElementById("logout-link");
+    if (logoutLink) {
+      logoutLink.style.display = "inline";
+      logoutLink.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      });
+    }
+
+    const loginLink = document.getElementById("login-link");
+    if (loginLink) loginLink.style.display = "none";
+
+    const headerContainer = document.querySelector("header .container");
+    if (headerContainer) {
+      const userInfo = document.createElement("span");
+      const { data: user } = await supabase.auth.getUser();
+      userInfo.textContent = `Welcome, ${user.user.email}`;
+      userInfo.style.marginLeft = "10px";
+      userInfo.style.color = "white";
+      headerContainer.appendChild(userInfo);
+    }
+  }
+</script>
+
 </body>
 </html>
 
