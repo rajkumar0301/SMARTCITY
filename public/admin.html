@@ -402,8 +402,7 @@ async function deleteVehicle(id) {
 
   const supabase = createClient(
     'https://qmodnifxglafmjmowspy.supabase.co',
-    'YOUR_SUPABASE_ANON_KEY'
-  );
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtb2RuaWZ4Z2xhZm1qbW93c3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyNDEyNzMsImV4cCI6MjA2ODgxNzI3M30.rUV0Z_b8qJjPEkeTges4QJR-j0No9NY3XEQIUHtuwvY');
 
   const { data: { session } } = await supabase.auth.getSession();
 

@@ -53,7 +53,7 @@ app.use(session({
 }));
 
 // Static files
-app.use(express.static(path.join(__dirname, '../client')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // API Routes
 app.use('/api/emergency', require('./routes/emergencies'));
@@ -118,17 +118,17 @@ function authenticateToken(req, res, next) {
 }
 
 // Static HTML Routes (Optional if not SPA)
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../client/index.html')));
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, '../client/login.html')));
-app.get('/register', (req, res) => res.sendFile(path.join(__dirname, '../client/register.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../public/index.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, '../public/login.html')));
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, '../public/register.html')));
 //app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, '../client/dashboard.html')));
-app.get('/feedback', (req, res) => res.sendFile(path.join(__dirname, '../client/feedback.html')));
-app.get('/about', (req, res) => res.sendFile(path.join(__dirname, '../client/about.html')));
-app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, '../client/contact.html')));
+app.get('/feedback', (req, res) => res.sendFile(path.join(__dirname, '../public/feedback.html')));
+app.get('/about', (req, res) => res.sendFile(path.join(__dirname, '../public/about.html')));
+app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, '../public/contact.html')));
 
 // Fallback for SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Start server
