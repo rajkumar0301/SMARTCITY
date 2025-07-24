@@ -1,8 +1,7 @@
-
 {
   "version": 2,
   "builds": [
-     {
+    {
       "src": "api/**/*.js",
       "use": "@vercel/node"
     },
@@ -12,17 +11,11 @@
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-  
+    }
+  ],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
-
-
-
   ]
 }

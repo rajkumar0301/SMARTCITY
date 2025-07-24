@@ -5,18 +5,18 @@ export default defineConfig({
   plugins: [react()],
 
   build: {
-    outDir: 'dist', // where the production build will be saved (used by Vercel)
+    outDir: 'dist', // ✔️ Output folder for production build (Vercel uses this)
   },
 
   server: {
     fs: {
-      allow: ['..'], // allows access to folders above this project root
+      allow: ['..'], // ✔️ Allows file system access above root (optional, only if needed)
     },
   },
 
   resolve: {
     alias: {
-      '@': '/src', // allows you to import like: import x from '@/components/X'
+      '@': '/src', // ✔️ Shortcut for imports (like import X from '@/components/X')
     },
   },
 })
