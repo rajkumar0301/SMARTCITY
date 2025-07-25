@@ -42,7 +42,10 @@ const razorpay = new Razorpay({
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://smartcity-pyo39tf9e-raj-kumar-hembrams-projects-ac0ca442.vercel.app", // your frontend URL
+  credentials: true
+}));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(session({
