@@ -11,7 +11,7 @@
     { "source": "/history", "destination": "/history.html" },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/otp_register", "destination": "/otp_register.html" },
-    { "source": "/register", "destination": "/register.html" },
+    { "source": "/register", "destination": "/public/register.html" },
     { "source": "/report-incident", "destination": "/report-incident.html" },
     { "source": "/success", "destination": "/success.html" },
     { "source": "/traffic", "destination": "/traffic.html" },
