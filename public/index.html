@@ -140,11 +140,22 @@
 
 
   <section class="hero">
-    <div class="hero-text">
-      <h2>Making Your City Smarter</h2>
-      <p>Real-time tracking, live traffic, vehicle monitoring, and emergency support.</p>
-      <a href="register.html" class="btn">Get Started</a>
-    </div>
+   <div id="hero-content">
+  <h2>Making Your City Smarter</h2>
+  <p>Real-time tracking, live traffic, vehicle monitoring, and emergency support.</p>
+  <a href="#" class="get-started-btn" id="getStartedBtn">Get Started</a>
+</div>
+
+<!-- Hidden city/dashboard content -->
+<div id="loggedInContent" style="display: none;">
+  <h2>Welcome to SmartCity Dashboard</h2>
+  <ul>
+    <li>📍 City: Kolkata</li>
+    <li>🚗 Active Vehicles: 234</li>
+    <li>📊 Live Alerts: 4 traffic violations reported</li>
+    <!-- Add anything you want here -->
+  </ul>
+</div>
   </section>
 
   <section class="features">
@@ -230,8 +241,19 @@
       });
     }
   </script>
+  <script>
+  // Check if user is logged in (via localStorage or cookie)
+  const email = localStorage.getItem("email");
+
+  if (email) {
+    document.getElementById("getStartedBtn").style.display = "none";
+    document.getElementById("loggedInContent").style.display = "block";
+  }
+</script>
+
 </body>
 </html>
+
 
 
 
