@@ -1,17 +1,22 @@
 {
   "version": 2,
-  "public": true,
-  "builds": [
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
-    }
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/booking-success", "destination": "/booking-success.html" },
+    { "source": "/booking", "destination": "/booking.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/emergency", "destination": "/emergency.html" },
+    { "source": "/feedback", "destination": "/feedback.html" },
+    { "source": "/history", "destination": "/history.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/otp_register", "destination": "/otp_register.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/report-incident", "destination": "/report-incident.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/traffic", "destination": "/traffic.html" },
+    { "source": "/vehicles", "destination": "/vehicles.html" },
+    { "source": "/verify-otp", "destination": "/verify-otp.html" },
+    { "source": "/violation", "destination": "/violation.html" }
   ]
 }
-
