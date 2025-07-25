@@ -21,44 +21,38 @@
 
   <script>
     document.getElementById("registerForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+      e.preventDefault();
 
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
-  const password = document.getElementById("password").value;
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const password = document.getElementById("password").value;
 
-  fetch("https://smartcity-backend.onrender.com/api/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name: name,
-      email: email,
-      phone: phone,
-      password: password
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert("Registration successful");
-      window.location.href = "login.html";
-    } else {
-      alert("Registration failed: " + data.message);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Something went wrong. Please try again.");
-  });
-});
-
+      fetch("https://smartcity-backend.onrender.com/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, phone, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message === "User registered successfully") {
+          alert("Registration successful");
+          window.location.href = "login.html";
+        } else {
+          alert("Registration failed: " + (data.error || data.message || "Unknown error"));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Something went wrong. Please try again.");
+      });
+    });
   </script>
-<!--   <script src="./scripts/register.js"></script> -->
 </body>
 </html>
+
 
 
 <!-- <!DOCTYPE html>
